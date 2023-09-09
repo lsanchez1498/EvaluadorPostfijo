@@ -26,13 +26,43 @@ public class EvaluadorPostfijo {
      * o no. Cada elemento de la lista es un elemento. DEBE OBlIGATORIAMENTE
      * USARSE EL ALGORITMO QUE ESTÁ EN EL ENUNCIADO.
      */
+
+    static boolean Apertura(String element){
+        return element.equals("(") || element.equals("[") || element.equals("{");
+    }
+
+    static boolean Cierre(String element){
+        return element.equals(")") || element.equals("]") || element.equals("}");
+    }
+
+    static boolean Par(String apertura, String cierre){
+        return (apertura.equals("(") && cierre.equals(")")) ||
+                (apertura.equals("[") && cierre.equals("]")) ||
+                (apertura.equals("{") && cierre.equals("}"));
+    }
+
     static boolean estaBalanceada(List<String> expresion) {
         Stack<String> delimitadores = new Stack<>();
 
-        // TODO: Escriba el algoritmo del enunciado aquí
+        for (String element : expresion) {
+            if (Apertura(element)) {
+                delimitadores.push(element);
+            } else if (Cierre(element)) {
+                if (delimitadores.isEmpty()){
+                    return false;
+                }
+                if (!Par(delimitadores.peek(), element)){
+                    return false;
+                }
+                else {
+                    delimitadores.pop();
+                }
+            }
+        }
 
         return delimitadores.isEmpty();
     }
+
 
     /**
      * Transforma la expresión, cambiando los símbolos de agrupación
