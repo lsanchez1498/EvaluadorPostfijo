@@ -40,7 +40,6 @@ public class EvaluadorPostfijo {
                 (apertura.equals("[") && cierre.equals("]")) ||
                 (apertura.equals("{") && cierre.equals("}"));
     }
-
     static boolean estaBalanceada(List<String> expresion) {
         Stack<String> delimitadores = new Stack<>();
 
@@ -59,17 +58,21 @@ public class EvaluadorPostfijo {
                 }
             }
         }
-
         return delimitadores.isEmpty();
     }
-
-
     /**
      * Transforma la expresión, cambiando los símbolos de agrupación
      * de corchetes ([]) y llaves ({}) por paréntesis ()
      */
     static void reemplazarDelimitadores(List<String> expresion) {
-        // TODO: Escriba el algoritmo aquí
+        for (int i = 0; i < expresion.size(); i++) {
+            String element = expresion.get(i);
+            if (element.equals("[") || element.equals("{")) {
+                expresion.set(i, "(");
+            } else if (element.equals("]") || element.equals("}")) {
+                expresion.set(i, ")");
+            }
+        }
     }
 
     /**
