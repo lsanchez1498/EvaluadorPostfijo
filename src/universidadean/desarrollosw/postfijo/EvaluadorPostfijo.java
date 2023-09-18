@@ -110,7 +110,8 @@ public class EvaluadorPostfijo {
     }
 
     static boolean esOperador(String elemento) {
-        return elemento.equals("+") || elemento.equals("-") || elemento.equals("*") || elemento.equals("/");
+        return elemento.equals("+") || elemento.equals("-") || elemento.equals("*") || elemento.equals("/")
+                || elemento.equals("%");
     }
 
     static int precedencia(String operador) {
@@ -118,6 +119,9 @@ public class EvaluadorPostfijo {
             return 1;
         } else if (operador.equals("*") || operador.equals("/")) {
             return 2;
+        }
+        else if(operador.equals("%")) {
+            return 3;
         }
         return 0;
     }
@@ -159,6 +163,8 @@ public class EvaluadorPostfijo {
                 } else {
                     throw new ArithmeticException("División por cero");
                 }
+            case "%":
+                return numero1 % numero2;
             default:
                 throw new IllegalArgumentException("Operador no válido: " + operador);
         }
