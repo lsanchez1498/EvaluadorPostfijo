@@ -81,12 +81,45 @@ public class EvaluadorPostfijo {
      * OJO: Debe usarse el algoritmo que está en el enunciado OBLIGATORIAMENTE
      */
     static List<String> convertirAPostfijo(List<String> expresion) {
-        Stack<String> pila = new Stack<>();
+        Stack<String> pilaOperadores = new Stack<>();
         List<String> salida = new ArrayList<>();
 
-        // TODO: Escriba el algoritmo aquí
+        for (String element : expresion) {
+            if (element.matches("\\d+")) {
+                salida.add(element);
+            } else if (esOperador(element)) {
+                while (!pilaOperadores.isEmpty() && precedencia(element) <= precedencia(pilaOperadores.peek())) {
+                    salida.add(pilaOperadores.pop());
+                }
+                pilaOperadores.push(element);
+            } else if (element.equals("(")) {
+                pilaOperadores.push(element);
+            } else if (element.equals(")")) {
+                while (!pilaOperadores.isEmpty() && !pilaOperadores.peek().equals("(")) {
+                    salida.add(pilaOperadores.pop());
+                }
+                pilaOperadores.pop();
+            }
+        }
+
+        while (!pilaOperadores.isEmpty()) {
+            salida.add(pilaOperadores.pop());
+        }
 
         return salida;
+    }
+
+    static boolean esOperador(String elemento) {
+        return elemento.equals("+") || elemento.equals("-") || elemento.equals("*") || elemento.equals("/");
+    }
+
+    static int precedencia(String operador) {
+        if (operador.equals("+") || operador.equals("-")) {
+            return 1;
+        } else if (operador.equals("*") || operador.equals("/")) {
+            return 2;
+        }
+        return 0;
     }
 
     /**
@@ -97,9 +130,65 @@ public class EvaluadorPostfijo {
     static int evaluarPostFija(List<String> expresion) {
         Stack<Integer> pila = new Stack<>();
 
-        // TODO: Realiza la evaluación de la expresión en formato postfijo
+        for (String elemento : expresion) {
+            if (elemento.matches("\\d+")) {
+                int numero = Integer.parseInt(elemento);
+                pila.push(numero);
+            } else if (esOperador(elemento)) {
+                int segundoNumero = pila.pop();
+                int primerNumero = pila.pop();
+                int resultado = aplicarOperador(primerNumero, segundoNumero, elemento);
+                pila.push(resultado);
+            }
+        }
 
         return pila.pop();
     }
 
+    static int aplicarOperador(int numero1, int numero2, String operador) {
+        switch (operador) {
+            case "+":
+                return numero1 + numero2;
+            case "-":
+                return numero1 - numero2;
+            case "*":
+                return numero1 * numero2;
+            case "/":
+                if (numero2 != 0) {
+                    return numero1 / numero2;
+                } else {
+                    throw new ArithmeticException("División por cero");
+                }
+            default:
+                throw new IllegalArgumentException("Operador no válido: " + operador);
+        }
+    }
+
+    static List<String> dividir(String expresion) {
+        StringReader sr = new StringReader(expresion);
+        StreamTokenizer st = new StreamTokenizer(sr);
+
+        st.slashSlashComments(false);
+        st.slashStarComments(false);
+        st.commentChar('#');
+        st.ordinaryChar('/');
+        st.ordinaryChar('-');
+
+        List<String> tokenList = new LinkedList<>();
+
+        try {
+            int tok = st.nextToken();
+            while (tok != StreamTokenizer.TT_EOF) {
+                Token t = new Token(tok, st.sval, (int) st.nval);
+                tokenList.add(t.getValue());
+                tok = st.nextToken();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return tokenList;
+    }
 }
+
+
+
